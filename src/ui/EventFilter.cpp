@@ -11,16 +11,14 @@
 #include <QKeyEvent>
 #include <QObject>
 
-static QStringList desktopWhiteListedKeys = { "Media Play",
-                                              "Media Pause",
-                                              "Media Stop",
-                                              "Media Next",
-                                              "Media Previous",
-                                              "Media Rewind",
-                                              "Media FastForward",
-                                              "Back"};
-// These just happen to be mostly the same.
-static QStringList win32AppcommandBlackListedKeys = desktopWhiteListedKeys;
+static QStringList win32AppcommandBlackListedKeys = { "Media Play",
+                                                      "Media Pause",
+                                                      "Media Stop",
+                                                      "Media Next",
+                                                      "Media Previous",
+                                                      "Media Rewind",
+                                                      "Media FastForward",
+                                                      "Back"};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 static QString keyEventToKeyString(QKeyEvent *kevent)
@@ -57,36 +55,6 @@ static QString keyEventToKeyString(QKeyEvent *kevent)
 bool EventFilter::eventFilter(QObject* watched, QEvent* event)
 {
   KonvergoWindow* window = qobject_cast<KonvergoWindow*>(parent());
-
-  if (window && window->property("webDesktopMode").toBool())
-  {
-    // For desktop mode we don't want fullblown keyboard handling in
-    // the host yet. We just want to handle some specific keyboard
-    // events.
-    //
-    if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease || event->type() == QEvent::ShortcutOverride)
-    {
-      QKeyEvent* key = dynamic_cast<QKeyEvent*>(event);
-
-      if (key)
-      {
-        InputBase::InputkeyState keystatus;
-
-        if (event->type() == QEvent::KeyPress)
-          keystatus = InputBase::KeyDown;
-        else
-          keystatus = InputBase::KeyUp;
-
-        QString seq = keyEventToKeyString(key);
-        if (desktopWhiteListedKeys.contains(seq))
-        {
-          InputKeyboard::Get().keyPress(seq, keystatus);
-          return true;
-        }
-      }
-    }
-    return QObject::eventFilter(watched, event);
-  }
 
   SystemComponent& system = SystemComponent::Get();
 

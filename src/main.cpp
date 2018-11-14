@@ -158,10 +158,17 @@ int main(int argc, char *argv[])
       qputenv("QT_SCALE_FACTOR", scale.toUtf8());
 
     QApplication app(newArgc, newArgv);
+
 #ifdef Q_OS_WIN
     // Setting the icon on Windows is necessary but will break user
     // ability to change icon on OSX
     app.setWindowIcon(QIcon(":/images/icon.png"));
+#endif
+
+#ifdef Q_OS_MAC
+    // This will be necessary once we upgrade Qt to >= 5.11.2
+    // See: https://github.com/plexinc/plex-media-player/issues/799
+    // app.setAttribute(Qt::AA_MacDontSwapCtrlAndMeta, true);
 #endif
 
 #if defined(Q_OS_MAC) && defined(NDEBUG)
