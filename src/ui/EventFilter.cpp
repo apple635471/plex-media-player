@@ -20,11 +20,39 @@ static QStringList win32AppcommandBlackListedKeys = { "Media Play",
                                                       "Media FastForward",
                                                       "Back"};
 
+// Qt swaps Ctrl and Meta keys on MacOS. The Qt::AA_MacDontSwapCtrlAndMeta
+// attribute is intended to be used to prevent the swap, although the handling
+// of this attribute is broken. So, until Qt is upgraded we manually remap the
+// modifier keys ourselves.
+// See: https://github.com/plexinc/plex-media-player/issues/799#issuecomment-438806504
+#ifdef Q_OS_MAC
+  // Example: 5.9.5 [x86_64-little_endian-lp64] 
+  QString qtVersion = qVersion();
+  static bool shouldRemapCtrlAndMeta = qtVersion.startsWith("5.9.5");
+#else
+  static bool shouldRemapCtrlAndMeta = false;
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 static QString keyEventToKeyString(QKeyEvent *kevent)
 {
   // We ignore the KeypadModifier here since it's practically useless
   QKeySequence modifiers(kevent->modifiers() &= ~Qt::KeypadModifier);
+  QString originalModifiers = modifiers.toString();
+  QString properModifiers = originalModifiers;
+
+  if (shouldRemapCtrlAndMeta) {
+    properModifiers.replace("Ctrl+", "Temp+");
+    properModifiers.replace("Meta+", "Ctrl+");
+    properModifiers.replace("Temp+", "Meta+");
+    
+    // keys.json always expects Meta+ to be ordered before Ctrl+.
+    properModifiers.replace("Ctrl+Meta+", "Meta+Ctrl+");
+  
+    if (originalModifiers != properModifiers) {
+      QLOG_DEBUG() << "Remapped modifiers from \"" + originalModifiers + "\" to \"" + properModifiers + "\"";
+    }
+  }
 
   QKeySequence keySeq(kevent->key());
   QString key = keySeq.toString();
@@ -48,7 +76,7 @@ static QString keyEventToKeyString(QKeyEvent *kevent)
     }
   }
 
-  return modifiers.toString() + key;
+  return properModifiers + key;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
