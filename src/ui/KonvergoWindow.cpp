@@ -57,7 +57,7 @@ KonvergoWindow::KonvergoWindow(QWindow* parent) :
   InputComponent::Get().registerHostCommand("reload", this, "reloadWeb");
   InputComponent::Get().registerHostCommand("fullscreen", this, "toggleFullscreen");
   InputComponent::Get().registerHostCommand("minimize", this, "minimizeWindow");
-  InputComponent::Get().registerHostCommand("switchMode", this, "toggleWebMode");
+  InputComponent::Get().registerHostCommand("toggleWebMode", this, "toggleWebMode");
 
 #ifdef TARGET_RPI
   // On RPI, we use dispmanx layering - the video is on a layer below Konvergo,
