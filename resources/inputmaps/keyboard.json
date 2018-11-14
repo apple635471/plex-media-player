@@ -53,7 +53,7 @@
     // application shortcuts
     "Ctrl\\+Shift\\+F": "host:toggleWebMode",
     "Meta\\+Ctrl\\+F": "host:fullscreen",
-    "Meta\\+Enter": "host:toggleWebMode",
+    "Meta\\+(Return|Enter)": "host:toggleWebMode",
     "F11": "host:fullscreen",
     "Shift\\+F11": "host:fullscreen",
     "Ctrl\\+Q": "host:close",
